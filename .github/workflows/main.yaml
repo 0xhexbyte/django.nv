@@ -56,3 +56,16 @@ jobs:
     steps:
       - run: echo "This is a deploy step."
 
+  secret_scanning:
+    runs-on: ubuntu-22.04
+    needs: test
+    steps:
+      - uses: actions/checkout@v2
+
+      - run: docker run --rm -v $(pwd):/src hysnsec/trufflehog filesystem /src --json > trufflehog-output.json
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: TruffleHog
+          path: trufflehog-output.json
+        if: always()                        # what is this for?
